@@ -14,6 +14,13 @@
 		01181B6E2CFCE75700595705 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B6D2CFCE75700595705 /* AppDelegate.swift */; };
 		01181B702CFCE77A00595705 /* Config.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B6F2CFCE77A00595705 /* Config.swift */; };
 		01181B722CFCE79400595705 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B712CFCE79400595705 /* SettingsManager.swift */; };
+		01181B742CFCE7D200595705 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B732CFCE7D200595705 /* NotificationManager.swift */; };
+		01181B772CFCE84D00595705 /* AppInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B762CFCE84D00595705 /* AppInfoView.swift */; };
+		01181B7B2CFCE88700595705 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B7A2CFCE88700595705 /* SettingsView.swift */; };
+		01181B7D2CFCE8AD00595705 /* ImageGeneratorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B7C2CFCE8AD00595705 /* ImageGeneratorView.swift */; };
+		01181B7F2CFCE8D200595705 /* ImageGeneratorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B7E2CFCE8D200595705 /* ImageGeneratorViewModel.swift */; };
+		01181B812CFCE90700595705 /* Replicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B802CFCE90700595705 /* Replicate.swift */; };
+		01181B872CFCEA7200595705 /* Bundle+Info.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B862CFCEA7200595705 /* Bundle+Info.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -25,6 +32,13 @@
 		01181B6D2CFCE75700595705 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		01181B6F2CFCE77A00595705 /* Config.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Config.swift; sourceTree = "<group>"; };
 		01181B712CFCE79400595705 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
+		01181B732CFCE7D200595705 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		01181B762CFCE84D00595705 /* AppInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoView.swift; sourceTree = "<group>"; };
+		01181B7A2CFCE88700595705 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		01181B7C2CFCE8AD00595705 /* ImageGeneratorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGeneratorView.swift; sourceTree = "<group>"; };
+		01181B7E2CFCE8D200595705 /* ImageGeneratorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGeneratorViewModel.swift; sourceTree = "<group>"; };
+		01181B802CFCE90700595705 /* Replicate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Replicate.swift; sourceTree = "<group>"; };
+		01181B862CFCEA7200595705 /* Bundle+Info.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Info.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,13 +71,14 @@
 		01181B5E2CFCDD5100595705 /* ImageR */ = {
 			isa = PBXGroup;
 			children = (
-				01181B5F2CFCDD5100595705 /* ImageRApp.swift */,
-				01181B612CFCDD5100595705 /* ContentView.swift */,
+				01181B852CFCEA2600595705 /* App */,
+				01181B842CFCEA0C00595705 /* Config */,
+				01181B832CFCE9D700595705 /* Services */,
+				01181B752CFCE80E00595705 /* Views */,
 				01181B632CFCDD5300595705 /* Assets.xcassets */,
+				01181B7E2CFCE8D200595705 /* ImageGeneratorViewModel.swift */,
 				01181B652CFCDD5300595705 /* Preview Content */,
-				01181B6D2CFCE75700595705 /* AppDelegate.swift */,
-				01181B6F2CFCE77A00595705 /* Config.swift */,
-				01181B712CFCE79400595705 /* SettingsManager.swift */,
+				01181B862CFCEA7200595705 /* Bundle+Info.swift */,
 			);
 			path = ImageR;
 			sourceTree = "<group>";
@@ -74,6 +89,44 @@
 				01181B662CFCDD5300595705 /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		01181B752CFCE80E00595705 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				01181B612CFCDD5100595705 /* ContentView.swift */,
+				01181B762CFCE84D00595705 /* AppInfoView.swift */,
+				01181B7A2CFCE88700595705 /* SettingsView.swift */,
+				01181B7C2CFCE8AD00595705 /* ImageGeneratorView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		01181B832CFCE9D700595705 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				01181B802CFCE90700595705 /* Replicate.swift */,
+				01181B732CFCE7D200595705 /* NotificationManager.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		01181B842CFCEA0C00595705 /* Config */ = {
+			isa = PBXGroup;
+			children = (
+				01181B6F2CFCE77A00595705 /* Config.swift */,
+				01181B712CFCE79400595705 /* SettingsManager.swift */,
+			);
+			path = Config;
+			sourceTree = "<group>";
+		};
+		01181B852CFCEA2600595705 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				01181B5F2CFCDD5100595705 /* ImageRApp.swift */,
+				01181B6D2CFCE75700595705 /* AppDelegate.swift */,
+			);
+			path = App;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -146,10 +199,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01181B742CFCE7D200595705 /* NotificationManager.swift in Sources */,
+				01181B7B2CFCE88700595705 /* SettingsView.swift in Sources */,
 				01181B6E2CFCE75700595705 /* AppDelegate.swift in Sources */,
+				01181B812CFCE90700595705 /* Replicate.swift in Sources */,
+				01181B772CFCE84D00595705 /* AppInfoView.swift in Sources */,
 				01181B722CFCE79400595705 /* SettingsManager.swift in Sources */,
 				01181B702CFCE77A00595705 /* Config.swift in Sources */,
+				01181B7D2CFCE8AD00595705 /* ImageGeneratorView.swift in Sources */,
 				01181B622CFCDD5100595705 /* ContentView.swift in Sources */,
+				01181B872CFCEA7200595705 /* Bundle+Info.swift in Sources */,
+				01181B7F2CFCE8D200595705 /* ImageGeneratorViewModel.swift in Sources */,
 				01181B602CFCDD5100595705 /* ImageRApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
