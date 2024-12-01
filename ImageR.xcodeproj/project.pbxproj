@@ -21,6 +21,8 @@
 		01181B7F2CFCE8D200595705 /* ImageGeneratorViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B7E2CFCE8D200595705 /* ImageGeneratorViewModel.swift */; };
 		01181B812CFCE90700595705 /* Replicate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B802CFCE90700595705 /* Replicate.swift */; };
 		01181B872CFCEA7200595705 /* Bundle+Info.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B862CFCEA7200595705 /* Bundle+Info.swift */; };
+		01181B8A2CFCED7A00595705 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = 01181B892CFCED7A00595705 /* Localizable.xcstrings */; };
+		01181B8D2CFCF11C00595705 /* Replicate in Frameworks */ = {isa = PBXBuildFile; productRef = 01181B8C2CFCF11C00595705 /* Replicate */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -39,6 +41,8 @@
 		01181B7E2CFCE8D200595705 /* ImageGeneratorViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGeneratorViewModel.swift; sourceTree = "<group>"; };
 		01181B802CFCE90700595705 /* Replicate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Replicate.swift; sourceTree = "<group>"; };
 		01181B862CFCEA7200595705 /* Bundle+Info.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Info.swift"; sourceTree = "<group>"; };
+		01181B882CFCEB9900595705 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		01181B892CFCED7A00595705 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				01181B8D2CFCF11C00595705 /* Replicate in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +76,7 @@
 		01181B5E2CFCDD5100595705 /* ImageR */ = {
 			isa = PBXGroup;
 			children = (
+				01181B882CFCEB9900595705 /* Info.plist */,
 				01181B852CFCEA2600595705 /* App */,
 				01181B842CFCEA0C00595705 /* Config */,
 				01181B832CFCE9D700595705 /* Services */,
@@ -79,6 +85,7 @@
 				01181B7E2CFCE8D200595705 /* ImageGeneratorViewModel.swift */,
 				01181B652CFCDD5300595705 /* Preview Content */,
 				01181B862CFCEA7200595705 /* Bundle+Info.swift */,
+				01181B892CFCED7A00595705 /* Localizable.xcstrings */,
 			);
 			path = ImageR;
 			sourceTree = "<group>";
@@ -143,8 +150,12 @@
 			buildRules = (
 			);
 			dependencies = (
+				01181B8F2CFCF1EF00595705 /* PBXTargetDependency */,
 			);
 			name = ImageR;
+			packageProductDependencies = (
+				01181B8C2CFCF11C00595705 /* Replicate */,
+			);
 			productName = ImageR;
 			productReference = 01181B5C2CFCDD5100595705 /* ImageR.app */;
 			productType = "com.apple.product-type.application";
@@ -171,8 +182,12 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 01181B532CFCDD5100595705;
+			packageReferences = (
+				01181B8B2CFCF11C00595705 /* XCRemoteSwiftPackageReference "replicate-swift" */,
+			);
 			productRefGroup = 01181B5D2CFCDD5100595705 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -189,6 +204,7 @@
 			files = (
 				01181B672CFCDD5300595705 /* Preview Assets.xcassets in Resources */,
 				01181B642CFCDD5300595705 /* Assets.xcassets in Resources */,
+				01181B8A2CFCED7A00595705 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -215,6 +231,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		01181B8F2CFCF1EF00595705 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = 01181B8E2CFCF1EF00595705 /* Replicate */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		01181B682CFCDD5300595705 /* Debug */ = {
@@ -346,6 +369,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ImageR/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImageR/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -374,6 +398,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"ImageR/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = ImageR/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -414,6 +439,30 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		01181B8B2CFCF11C00595705 /* XCRemoteSwiftPackageReference "replicate-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/replicate/replicate-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.24.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		01181B8C2CFCF11C00595705 /* Replicate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01181B8B2CFCF11C00595705 /* XCRemoteSwiftPackageReference "replicate-swift" */;
+			productName = Replicate;
+		};
+		01181B8E2CFCF1EF00595705 /* Replicate */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 01181B8B2CFCF11C00595705 /* XCRemoteSwiftPackageReference "replicate-swift" */;
+			productName = Replicate;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 01181B542CFCDD5100595705 /* Project object */;
 }

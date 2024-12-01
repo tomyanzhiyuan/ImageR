@@ -20,25 +20,13 @@ class ImageGeneratorViewModel: ObservableObject {
         self.replicateService = ReplicateService(apiToken: apiToken)
     }
     
-    func generateDisposableImage(prompt: String) async {
+    func generateImage(prompt: String) async {
         isLoading = true
         error = nil
         
         do {
-            // Start the prediction
-            let prediction = try await replicateService.runDisposableCamera(prompt: prompt)
-            
-            // Poll for results
-            var currentPrediction = prediction
-            while currentPrediction.status != "succeeded" && currentPrediction.status != "failed" {
-                try await Task.sleep(nanoseconds: 1_000_000_000) // Wait 1 second
-                currentPrediction = try await replicateService.checkPrediction(id: prediction.id)
-            }
-            
-            if let outputs = currentPrediction.output {
-                generatedImages = outputs.compactMap { URL(string: $0) }
-            } else if let error = currentPrediction.error {
-                self.error = error
+            if let imageURL = try await replicateService.runImageGeneration(prompt: prompt) {
+                generatedImages.append(imageURL)
             }
         } catch {
             self.error = error.localizedDescription
@@ -47,23 +35,13 @@ class ImageGeneratorViewModel: ObservableObject {
         isLoading = false
     }
     
-    func restoreImage(url: String) async {
+    func restoreImage(url: URL) async {
         isLoading = true
         error = nil
         
         do {
-            let prediction = try await replicateService.runFaceRestoration(imageURL: url)
-            
-            var currentPrediction = prediction
-            while currentPrediction.status != "succeeded" && currentPrediction.status != "failed" {
-                try await Task.sleep(nanoseconds: 1_000_000_000)
-                currentPrediction = try await replicateService.checkPrediction(id: prediction.id)
-            }
-            
-            if let outputs = currentPrediction.output {
-                generatedImages = outputs.compactMap { URL(string: $0) }
-            } else if let error = currentPrediction.error {
-                self.error = error
+            if let restoredURL = try await replicateService.runFaceRestoration(imageURL: url) {
+                generatedImages.append(restoredURL)
             }
         } catch {
             self.error = error.localizedDescription

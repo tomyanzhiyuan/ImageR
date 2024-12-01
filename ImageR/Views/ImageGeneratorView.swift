@@ -9,36 +9,49 @@ import Foundation
 import SwiftUI
 
 struct ImageGeneratorView: View {
-    @StateObject private var viewModel: ImageGeneratorViewModel
+    @ObservedObject var viewModel: ImageGeneratorViewModel
     @State private var prompt: String = ""
     @State private var imageURL: String = ""
     @State private var selectedTab = 0
-    
-    init(apiToken: String) {
-        _viewModel = StateObject(wrappedValue: ImageGeneratorViewModel(apiToken: apiToken))
-    }
     
     var body: some View {
         NavigationView {
             VStack {
                 Picker("Mode", selection: $selectedTab) {
-                    Text("Disposable Camera").tag(0)
-                    Text("Face Restoration").tag(1)
+                    Text("Generate Image").tag(0)
+                    Text("Restore Face").tag(1)
                 }
                 .pickerStyle(SegmentedPickerStyle())
                 .padding()
                 
                 if selectedTab == 0 {
-                    disposableCameraView
+                    TextField("Enter prompt for image generation", text: $prompt)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding()
+                    
+                    Button("Generate") {
+                        Task {
+                            await viewModel.generateImage(prompt: prompt)
+                        }
+                    }
+                    .disabled(prompt.isEmpty || viewModel.isLoading)
                 } else {
-                    faceRestorationView
+                    TextField("Enter image URL for restoration", text: $imageURL)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding()
+                    
+                    Button("Restore") {
+                        if let url = URL(string: imageURL) {
+                            Task {
+                                await viewModel.restoreImage(url: url)
+                            }
+                        }
+                    }
+                    .disabled(imageURL.isEmpty || viewModel.isLoading)
                 }
                 
                 if viewModel.isLoading {
                     ProgressView()
-                        .progressViewStyle(CircularProgressViewStyle())
-                        .scaleEffect(1.5)
-                        .padding()
                 }
                 
                 if let error = viewModel.error {
@@ -54,46 +67,17 @@ struct ImageGeneratorView: View {
                                 image
                                     .resizable()
                                     .aspectRatio(contentMode: .fit)
-                                    .cornerRadius(8)
                             } placeholder: {
                                 ProgressView()
                             }
+                            .frame(height: 150)
+                            .cornerRadius(8)
                         }
                     }
                     .padding()
                 }
             }
             .navigationTitle("AI Image Generator")
-        }
-    }
-    
-    private var disposableCameraView: some View {
-        VStack {
-            TextField("Enter prompt for image generation", text: $prompt)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
-            Button("Generate Image") {
-                Task {
-                    await viewModel.generateDisposableImage(prompt: prompt)
-                }
-            }
-            .disabled(prompt.isEmpty || viewModel.isLoading)
-        }
-    }
-    
-    private var faceRestorationView: some View {
-        VStack {
-            TextField("Enter image URL for restoration", text: $imageURL)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-            
-            Button("Restore Image") {
-                Task {
-                    await viewModel.restoreImage(url: imageURL)
-                }
-            }
-            .disabled(imageURL.isEmpty || viewModel.isLoading)
         }
     }
 }
