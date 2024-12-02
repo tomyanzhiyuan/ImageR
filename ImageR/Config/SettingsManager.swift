@@ -14,7 +14,6 @@ class SettingsManager: ObservableObject {
     @AppStorage("theme") var theme: Int = 0 // 0: System, 1: Light, 2: Dark
     @AppStorage("imageQuality") var imageQuality: Int = 1 // 0: Low, 1: Medium, 2: High
     
-    // Theme color (customizable in Assets)
     var accentColor: Color {
         Color("AccentColor")
     }

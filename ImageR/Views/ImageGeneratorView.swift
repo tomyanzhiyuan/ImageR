@@ -4,15 +4,17 @@
 //
 //  Created by Tom Yan Zhiyuan on 01/12/2024.
 //
-
 import Foundation
 import SwiftUI
 
 struct ImageGeneratorView: View {
     @ObservedObject var viewModel: ImageGeneratorViewModel
+    @StateObject private var storageManager = ImageStorageManager()
     @State private var prompt: String = ""
     @State private var imageURL: String = ""
     @State private var selectedTab = 0
+    @State private var selectedImage: GeneratedImage? = nil
+    @State private var showingDetail = false
     
     var body: some View {
         NavigationView {
@@ -31,7 +33,14 @@ struct ImageGeneratorView: View {
                     
                     Button("Generate") {
                         Task {
-                            await viewModel.generateImage(prompt: prompt)
+                            if let url = await viewModel.generateImage(prompt: prompt) {
+                                let generatedImage = GeneratedImage(
+                                    url: url,
+                                    prompt: prompt,
+                                    type: .generated
+                                )
+                                storageManager.saveImage(generatedImage)
+                            }
                         }
                     }
                     .disabled(prompt.isEmpty || viewModel.isLoading)
@@ -43,7 +52,13 @@ struct ImageGeneratorView: View {
                     Button("Restore") {
                         if let url = URL(string: imageURL) {
                             Task {
-                                await viewModel.restoreImage(url: url)
+                                if let restoredUrl = await viewModel.restoreImage(url: url) {
+                                    let restoredImage = GeneratedImage(
+                                        url: restoredUrl,
+                                        type: .restored
+                                    )
+                                    storageManager.saveImage(restoredImage)
+                                }
                             }
                         }
                     }
@@ -52,6 +67,7 @@ struct ImageGeneratorView: View {
                 
                 if viewModel.isLoading {
                     ProgressView()
+                        .padding()
                 }
                 
                 if let error = viewModel.error {
@@ -62,22 +78,43 @@ struct ImageGeneratorView: View {
                 
                 ScrollView {
                     LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
-                        ForEach(viewModel.generatedImages, id: \.self) { imageUrl in
-                            AsyncImage(url: imageUrl) { image in
-                                image
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fit)
-                            } placeholder: {
-                                ProgressView()
+                        ForEach(storageManager.savedImages.reversed()) { image in
+                            AsyncImage(url: image.url) { phase in
+                                switch phase {
+                                case .success(let loadedImage):
+                                    loadedImage
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 150, height: 150)
+                                        .clipped()
+                                        .cornerRadius(8)
+                                        .onTapGesture {
+                                            selectedImage = image
+                                            showingDetail = true
+                                        }
+                                case .failure(_):
+                                    Image(systemName: "xmark.circle")
+                                        .font(.system(size: 40))
+                                        .foregroundColor(.red)
+                                        .frame(width: 150, height: 150)
+                                case .empty:
+                                    ProgressView()
+                                        .frame(width: 150, height: 150)
+                                @unknown default:
+                                    EmptyView()
+                                }
                             }
-                            .frame(height: 150)
-                            .cornerRadius(8)
                         }
                     }
                     .padding()
                 }
             }
             .navigationTitle("AI Image Generator")
+            .sheet(isPresented: $showingDetail) {
+                if let image = selectedImage {
+                    ImageDetailView(image: image)
+                }
+            }
         }
     }
 }

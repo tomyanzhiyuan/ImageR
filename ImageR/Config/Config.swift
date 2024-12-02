@@ -8,7 +8,6 @@
 import Foundation
 
 enum Config {
-    // ⚠️ Add your Replicate API key here
     static let replicateAPIKey = "YOUR_API_KEY_HERE"
     
     // Model versions
