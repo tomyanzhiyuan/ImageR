@@ -7,26 +7,34 @@
 
 import Foundation
 
+struct ImageSize: Codable {
+    let width: Int
+    let height: Int
+}
+
 struct GeneratedImage: Identifiable, Codable {
     let id: UUID
     let url: URL
     let prompt: String?
     let createdAt: Date
     let type: ImageType
+    let size: ImageSize?
     
     enum ImageType: String, Codable {
         case generated
         case restored
     }
     
-    init(url: URL, prompt: String? = nil, type: ImageType) {
+    init(url: URL, prompt: String? = nil, type: ImageType, size: ImageSize? = nil) {
         self.id = UUID()
         self.url = url
         self.prompt = prompt
         self.createdAt = Date()
         self.type = type
+        self.size = size
     }
 }
+
 
 class ImageStorageManager: ObservableObject {
     @Published var savedImages: [GeneratedImage] = []

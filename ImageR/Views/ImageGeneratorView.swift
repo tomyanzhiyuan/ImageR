@@ -10,7 +10,7 @@ import PhotosUI
 
 struct ImageGeneratorView: View {
     @ObservedObject var viewModel: ImageGeneratorViewModel
-    @StateObject private var storageManager = ImageStorageManager()
+    var storageManager = ImageStorageManager()
     @State private var prompt: String = ""
     @State private var selectedTab = 0
     @State private var selectedImage: GeneratedImage? = nil
@@ -51,10 +51,13 @@ struct ImageGeneratorView: View {
                     Button("Generate") {
                         Task {
                             if let url = await viewModel.generateImage(prompt: prompt, aspectRatio: selectedAspectRatio) {
+                                let size = ImageSize(width: 1024, height: aspectRatio == .square ? 1024 :
+                                                    (aspectRatio == .landscape ? 576 : 1792))
                                 let generatedImage = GeneratedImage(
                                     url: url,
                                     prompt: prompt,
-                                    type: .generated
+                                    type: .generated,
+                                    size: size
                                 )
                                 storageManager.saveImage(generatedImage)
                             }
@@ -90,9 +93,11 @@ struct ImageGeneratorView: View {
                             Button("Restore Face") {
                                 Task {
                                     if let url = await viewModel.restoreImage(imageData: selectedImageData!) {
+                                        let size = ImageSize(width: 1024, height: 1024) // Or get actual size from the image data
                                         let restoredImage = GeneratedImage(
                                             url: url,
-                                            type: .restored
+                                            type: .restored,
+                                            size: size
                                         )
                                         storageManager.saveImage(restoredImage)
                                         showingRestorationSuccess = true

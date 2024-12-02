@@ -12,21 +12,22 @@ struct ImageDetailView: View {
     let image: GeneratedImage
     @Environment(\.dismiss) private var dismiss
     @State private var scale: CGFloat = 1.0
-    @State private var lastScale: CGFloat = 1.0
     @State private var offset = CGSize.zero
+    @State private var lastScale: CGFloat = 1.0
     @State private var lastOffset = CGSize.zero
     
     var body: some View {
         NavigationView {
-            GeometryReader { geometry in
-                ScrollView([.horizontal, .vertical], showsIndicators: false) {
+            ScrollView {
+                VStack(spacing: 20) {
+                    // Image display
                     AsyncImage(url: image.url) { phase in
                         switch phase {
                         case .success(let image):
                             image
                                 .resizable()
                                 .aspectRatio(contentMode: .fit)
-                                .frame(width: geometry.size.width, height: geometry.size.height)
+                                .frame(maxHeight: 300)
                                 .scaleEffect(scale)
                                 .offset(offset)
                                 .gesture(
@@ -59,7 +60,7 @@ struct ImageDetailView: View {
                                         lastOffset = .zero
                                     }
                                 }
-                        case .failure(_):
+                        case .failure:
                             Image(systemName: "xmark.circle")
                                 .font(.system(size: 50))
                                 .foregroundColor(.red)
@@ -69,13 +70,55 @@ struct ImageDetailView: View {
                             EmptyView()
                         }
                     }
+                    
+                    // Image details
+                    VStack(alignment: .leading, spacing: 12) {
+                        if image.type == .generated {
+                            DetailRow(title: "Prompt", value: image.prompt ?? "No prompt")
+                        }
+                        
+                        DetailRow(title: "Type", value: image.type == .generated ? "AI Generated" : "Face Restored")
+                        DetailRow(title: "Created", value: formatDate(image.createdAt))
+                        DetailRow(title: "Size", value: "\(image.size?.width ?? 0) x \(image.size?.height ?? 0)")
+                        
+                        if image.type == .generated {
+                            DetailRow(title: "Model", value: "Stable Diffusion v3")
+                        }
+                    }
+                    .padding()
+                    .background(Color(.systemBackground))
+                    .cornerRadius(12)
+                    .shadow(radius: 2)
+                    .padding(.horizontal)
                 }
             }
             .navigationBarItems(trailing: Button("Done") {
                 dismiss()
             })
-            .navigationTitle(image.prompt ?? "Generated Image")
+            .navigationTitle(image.type == .generated ? "Generated Image" : "Restored Image")
             .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+}
+
+struct DetailRow: View {
+    let title: String
+    let value: String
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(title)
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+            Text(value)
+                .font(.body)
         }
     }
 }

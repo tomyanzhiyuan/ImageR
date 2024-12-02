@@ -26,10 +26,22 @@ class ReplicateService {
         let model = try await client.getModel("stability-ai/stable-diffusion-3")
         
         if let latestVersion = model.latestVersion {
-            let input: [String: Replicate.Value] = [
+            // Get quality settings from UserDefaults
+                        let defaults = UserDefaults.standard
+            let qualitySettings = defaults.dictionary(forKey: "replicateSettings") ?? [:]
+            
+            var input: [String: Replicate.Value] = [
                 "prompt": .string(prompt),
                 "aspect_ratio": .string(aspectRatio.rawValue)
             ]
+            
+            // Add quality settings
+            if let steps = qualitySettings["num_inference_steps"] as? Int {
+                input["num_inference_steps"] = .int(steps)
+            }
+            if let guidance = qualitySettings["guidance_scale"] as? Double {
+                input["guidance_scale"] = .double(guidance)
+            }
             
             let prediction = try await client.createPrediction(
                 version: latestVersion.id,
