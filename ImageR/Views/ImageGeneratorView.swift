@@ -6,15 +6,21 @@
 //
 import Foundation
 import SwiftUI
+import PhotosUI
 
 struct ImageGeneratorView: View {
     @ObservedObject var viewModel: ImageGeneratorViewModel
     @StateObject private var storageManager = ImageStorageManager()
     @State private var prompt: String = ""
-    @State private var imageURL: String = ""
     @State private var selectedTab = 0
     @State private var selectedImage: GeneratedImage? = nil
     @State private var showingDetail = false
+    @State private var selectedAspectRatio: ImageAspectRatio = .square
+    
+    // Photo picker states
+    @State private var selectedItem: PhotosPickerItem? = nil
+    @State private var selectedImageData: Data? = nil
+    @State private var showingLoadingPhoto = false
     
     var body: some View {
         NavigationView {
@@ -27,13 +33,21 @@ struct ImageGeneratorView: View {
                 .padding()
                 
                 if selectedTab == 0 {
+                    Picker("Aspect Ratio", selection: $selectedAspectRatio) {
+                        Text("Square").tag(ImageAspectRatio.square)
+                        Text("Landscape").tag(ImageAspectRatio.landscape)
+                        Text("Portrait").tag(ImageAspectRatio.portrait)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding(.horizontal)
+                    
                     TextField("Enter prompt for image generation", text: $prompt)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                         .padding()
                     
                     Button("Generate") {
                         Task {
-                            if let url = await viewModel.generateImage(prompt: prompt) {
+                            if let url = await viewModel.generateImage(prompt: prompt, aspectRatio: selectedAspectRatio) {
                                 let generatedImage = GeneratedImage(
                                     url: url,
                                     prompt: prompt,
@@ -45,27 +59,56 @@ struct ImageGeneratorView: View {
                     }
                     .disabled(prompt.isEmpty || viewModel.isLoading)
                 } else {
-                    TextField("Enter image URL for restoration", text: $imageURL)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding()
-                    
-                    Button("Restore") {
-                        if let url = URL(string: imageURL) {
-                            Task {
-                                if let restoredUrl = await viewModel.restoreImage(url: url) {
-                                    let restoredImage = GeneratedImage(
-                                        url: restoredUrl,
-                                        type: .restored
-                                    )
-                                    storageManager.saveImage(restoredImage)
+                    VStack(spacing: 20) {
+                        if let selectedImageData,
+                           let uiImage = UIImage(data: selectedImageData) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFit()
+                                .frame(height: 200)
+                                .cornerRadius(8)
+                        }
+                        
+                        PhotosPicker(
+                            selection: $selectedItem,
+                            matching: .images,
+                            photoLibrary: .shared()) {
+                                Label("Select Photo", systemImage: "photo.fill")
+                                    .font(.headline)
+                                    .foregroundColor(.white)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.blue)
+                                    .cornerRadius(10)
+                                    .padding(.horizontal)
+                            }
+                        
+                        if selectedImageData != nil {
+                            Button("Restore Face") {
+                                Task {
+                                    showingLoadingPhoto = true
+                                    if let url = await viewModel.restoreImage(imageData: selectedImageData!) {
+                                        let restoredImage = GeneratedImage(
+                                            url: url,
+                                            type: .restored
+                                        )
+                                        storageManager.saveImage(restoredImage)
+                                    }
+                                    showingLoadingPhoto = false
                                 }
                             }
+                            .foregroundColor(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(Color.green)
+                            .cornerRadius(10)
+                            .padding(.horizontal)
+                            .disabled(viewModel.isLoading)
                         }
                     }
-                    .disabled(imageURL.isEmpty || viewModel.isLoading)
                 }
                 
-                if viewModel.isLoading {
+                if viewModel.isLoading || showingLoadingPhoto {
                     ProgressView()
                         .padding()
                 }
@@ -77,42 +120,24 @@ struct ImageGeneratorView: View {
                 }
                 
                 ScrollView {
-                    LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
-                        ForEach(storageManager.savedImages.reversed()) { image in
-                            AsyncImage(url: image.url) { phase in
-                                switch phase {
-                                case .success(let loadedImage):
-                                    loadedImage
-                                        .resizable()
-                                        .aspectRatio(contentMode: .fill)
-                                        .frame(width: 150, height: 150)
-                                        .clipped()
-                                        .cornerRadius(8)
-                                        .onTapGesture {
-                                            selectedImage = image
-                                            showingDetail = true
-                                        }
-                                case .failure(_):
-                                    Image(systemName: "xmark.circle")
-                                        .font(.system(size: 40))
-                                        .foregroundColor(.red)
-                                        .frame(width: 150, height: 150)
-                                case .empty:
-                                    ProgressView()
-                                        .frame(width: 150, height: 150)
-                                @unknown default:
-                                    EmptyView()
-                                }
-                            }
-                        }
-                    }
-                    .padding()
+                    ImageGridView(
+                        storageManager: storageManager,
+                        selectedImage: $selectedImage,
+                        showingDetail: $showingDetail
+                    )
                 }
             }
-            .navigationTitle("AI Image Generator")
+//            .navigationTitle("AI Image Generator")
             .sheet(isPresented: $showingDetail) {
                 if let image = selectedImage {
                     ImageDetailView(image: image)
+                }
+            }
+            .onChange(of: selectedItem) { _, newItem in
+                Task {
+                    if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                        selectedImageData = data
+                    }
                 }
             }
         }

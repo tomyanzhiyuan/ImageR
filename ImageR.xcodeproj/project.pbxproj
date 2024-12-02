@@ -25,6 +25,8 @@
 		01181B8D2CFCF11C00595705 /* Replicate in Frameworks */ = {isa = PBXBuildFile; productRef = 01181B8C2CFCF11C00595705 /* Replicate */; };
 		01181B912CFD0CA500595705 /* ImageDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B902CFD0CA500595705 /* ImageDetailView.swift */; };
 		01181B932CFD0D1500595705 /* ImageStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B922CFD0D1500595705 /* ImageStorageManager.swift */; };
+		01181B972CFD5F2000595705 /* PhotoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B962CFD5F2000595705 /* PhotoManager.swift */; };
+		01181B992CFD60C100595705 /* ImageGridItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B982CFD60C100595705 /* ImageGridItem.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -46,6 +48,8 @@
 		01181B892CFCED7A00595705 /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		01181B902CFD0CA500595705 /* ImageDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageDetailView.swift; sourceTree = "<group>"; };
 		01181B922CFD0D1500595705 /* ImageStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorageManager.swift; sourceTree = "<group>"; };
+		01181B962CFD5F2000595705 /* PhotoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoManager.swift; sourceTree = "<group>"; };
+		01181B982CFD60C100595705 /* ImageGridItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGridItem.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -108,6 +112,7 @@
 				01181B7A2CFCE88700595705 /* SettingsView.swift */,
 				01181B7C2CFCE8AD00595705 /* ImageGeneratorView.swift */,
 				01181B902CFD0CA500595705 /* ImageDetailView.swift */,
+				01181B982CFD60C100595705 /* ImageGridItem.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -136,6 +141,7 @@
 			children = (
 				01181B5F2CFCDD5100595705 /* ImageRApp.swift */,
 				01181B6D2CFCE75700595705 /* AppDelegate.swift */,
+				01181B962CFD5F2000595705 /* PhotoManager.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -222,8 +228,10 @@
 				01181B742CFCE7D200595705 /* NotificationManager.swift in Sources */,
 				01181B7B2CFCE88700595705 /* SettingsView.swift in Sources */,
 				01181B6E2CFCE75700595705 /* AppDelegate.swift in Sources */,
+				01181B972CFD5F2000595705 /* PhotoManager.swift in Sources */,
 				01181B912CFD0CA500595705 /* ImageDetailView.swift in Sources */,
 				01181B812CFCE90700595705 /* Replicate.swift in Sources */,
+				01181B992CFD60C100595705 /* ImageGridItem.swift in Sources */,
 				01181B772CFCE84D00595705 /* AppInfoView.swift in Sources */,
 				01181B722CFCE79400595705 /* SettingsManager.swift in Sources */,
 				01181B932CFD0D1500595705 /* ImageStorageManager.swift in Sources */,
@@ -376,6 +384,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ImageR/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Allow ImageR to save generated images to your photo library";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow ImageR to access your photo library for face restoration";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -405,6 +415,8 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ImageR/Info.plist;
+				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Allow ImageR to save generated images to your photo library";
+				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow ImageR to access your photo library for face restoration";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;

@@ -1,9 +1,6 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "AI Image Generator" : {
-
-    },
     "API Configuration" : {
 
     },
@@ -13,19 +10,31 @@
     "App Info" : {
 
     },
+    "Aspect Ratio" : {
+
+    },
+    "Cancel" : {
+
+    },
     "Dark" : {
 
     },
     "Default Model" : {
 
     },
+    "Delete" : {
+
+    },
     "Disposable Camera" : {
 
     },
-    "Enter image URL for restoration" : {
+    "Done" : {
 
     },
     "Enter prompt for image generation" : {
+
+    },
+    "Error" : {
 
     },
     "Face Restoration" : {
@@ -38,6 +47,9 @@
 
     },
     "High" : {
+
+    },
+    "Image Options" : {
 
     },
     "Image Quality" : {
@@ -454,6 +466,9 @@
         }
       }
     },
+    "Landscape" : {
+
+    },
     "Light" : {
 
     },
@@ -466,16 +481,31 @@
     "Mode" : {
 
     },
-    "Preferences" : {
+    "OK" : {
 
     },
-    "Restore" : {
+    "Portrait" : {
+
+    },
+    "Preferences" : {
 
     },
     "Restore Face" : {
 
     },
+    "Save to Photos" : {
+
+    },
+    "Saved!" : {
+
+    },
+    "Select Photo" : {
+
+    },
     "Settings" : {
+
+    },
+    "Square" : {
 
     },
     "System" : {

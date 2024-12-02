@@ -19,35 +19,33 @@ class ImageGeneratorViewModel: ObservableObject {
         self.replicateService = ReplicateService(apiToken: apiToken)
     }
     
-    func generateImage(prompt: String) async -> URL? {
+    func generateImage(prompt: String, aspectRatio: ImageAspectRatio = .square) async -> URL? {
         isLoading = true
         error = nil
         
         do {
-            if let imageURL = try await replicateService.runImageGeneration(prompt: prompt) {
-                return imageURL
-            }
+            let imageURL = try await replicateService.runImageGeneration(prompt: prompt, aspectRatio: aspectRatio)
+            isLoading = false
+            return imageURL
         } catch {
             self.error = error.localizedDescription
+            isLoading = false
+            return nil
         }
-        
-        isLoading = false
-        return nil
     }
     
-    func restoreImage(url: URL) async -> URL? {
+    func restoreImage(imageData: Data) async -> URL? {
         isLoading = true
         error = nil
         
         do {
-            if let restoredURL = try await replicateService.runFaceRestoration(imageURL: url) {
-                return restoredURL
-            }
+            let imageURL = try await replicateService.runFaceRestoration(imageData: imageData)
+            isLoading = false
+            return imageURL
         } catch {
             self.error = error.localizedDescription
+            isLoading = false
+            return nil
         }
-        
-        isLoading = false
-        return nil
     }
 }

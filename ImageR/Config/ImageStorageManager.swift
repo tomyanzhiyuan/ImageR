@@ -6,6 +6,7 @@
 //
 
 import Foundation
+
 struct GeneratedImage: Identifiable, Codable {
     let id: UUID
     let url: URL
@@ -38,6 +39,11 @@ class ImageStorageManager: ObservableObject {
     
     func saveImage(_ image: GeneratedImage) {
         savedImages.append(image)
+        saveToStorage()
+    }
+    
+    func deleteImage(_ image: GeneratedImage) {
+        savedImages.removeAll { $0.id == image.id }
         saveToStorage()
     }
     
