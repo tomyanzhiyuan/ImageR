@@ -37,13 +37,23 @@ class ImageGeneratorViewModel: ObservableObject {
     func restoreImage(imageData: Data) async -> URL? {
         isLoading = true
         error = nil
+        print("Starting face restoration...")
         
         do {
-            let imageURL = try await replicateService.runFaceRestoration(imageData: imageData)
+            guard let url = try await replicateService.runFaceRestoration(imageData: imageData) else {
+                print("No URL returned from face restoration")
+                self.error = "Failed to restore face - no result returned"
+                isLoading = false
+                return nil
+            }
+            
+            print("Face restoration successful, URL: \(url)")
             isLoading = false
-            return imageURL
+            return url
+            
         } catch {
-            self.error = error.localizedDescription
+            print("Face restoration failed with error: \(error)")
+            self.error = "Failed to restore face: \(error.localizedDescription)"
             isLoading = false
             return nil
         }

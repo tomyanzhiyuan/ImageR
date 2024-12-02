@@ -11,11 +11,12 @@ import PhotosUI
 struct ImageGridItem: View {
     let image: GeneratedImage
     let onDelete: () -> Void
-    let onSave: () -> Void
+    
     @State private var showingOptions = false
-    @State private var showingSaveSuccess = false
     @State private var showingError = false
     @State private var errorMessage = ""
+    @State private var showingSaveSuccess = false
+    @State private var isSaving = false
     
     var body: some View {
         AsyncImage(url: image.url) { phase in
@@ -31,34 +32,33 @@ struct ImageGridItem: View {
                         Button {
                             showingOptions = true
                         } label: {
-                            Image(systemName: "ellipsis")
-                                .foregroundColor(.white)
-                                .padding(8)
-                                .background(Color.black.opacity(0.6))
-                                .clipShape(Circle())
-                        }
-                        .padding(4)
-                    }
-                    .confirmationDialog("Image Options", isPresented: $showingOptions) {
-                        Button("Save to Photos") {
-                            Task {
-                                do {
-                                    try await PhotoManager.saveToAlbum(url: image.url)
-                                    showingSaveSuccess = true
-                                } catch {
-                                    errorMessage = error.localizedDescription
-                                    showingError = true
-                                }
+                            if isSaving {
+                                ProgressView()
+                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                                    .padding(8)
+                                    .background(Color.black.opacity(0.6))
+                                    .clipShape(Circle())
+                            } else {
+                                Image(systemName: "ellipsis")
+                                    .foregroundColor(.white)
+                                    .padding(8)
+                                    .background(Color.black.opacity(0.6))
+                                    .clipShape(Circle())
                             }
                         }
-                        Button("Delete", role: .destructive) { onDelete() }
-                        Button("Cancel", role: .cancel) { }
+                        .padding(4)
+                        .disabled(isSaving)
                     }
-            case .failure(_):
-                Image(systemName: "xmark.circle")
-                    .font(.system(size: 40))
-                    .foregroundColor(.red)
-                    .frame(width: 150, height: 150)
+            case .failure(let error):
+                VStack {
+                    Image(systemName: "xmark.circle")
+                        .font(.system(size: 40))
+                        .foregroundColor(.red)
+                    Text(error.localizedDescription)
+                        .font(.caption)
+                        .foregroundColor(.red)
+                }
+                .frame(width: 150, height: 150)
             case .empty:
                 ProgressView()
                     .frame(width: 150, height: 150)
@@ -66,14 +66,44 @@ struct ImageGridItem: View {
                 EmptyView()
             }
         }
-        .alert("Saved!", isPresented: $showingSaveSuccess) {
-            Button("OK", role: .cancel) { }
+        .confirmationDialog("Image Options", isPresented: $showingOptions) {
+            Button("Save to Photos") {
+                Task {
+                    await saveImage()
+                }
+            }
+            Button("Delete", role: .destructive) {
+                onDelete()
+            }
+            Button("Cancel", role: .cancel) { }
         }
         .alert("Error", isPresented: $showingError) {
             Button("OK", role: .cancel) { }
+            Button("Open Settings") {
+                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
+                    UIApplication.shared.open(settingsURL)
+                }
+            }
         } message: {
             Text(errorMessage)
         }
+        .alert("Success", isPresented: $showingSaveSuccess) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Image saved successfully to Photos")
+        }
+    }
+    
+    private func saveImage() async {
+        isSaving = true
+        do {
+            try await PhotoManager.saveToAlbum(url: image.url)
+            showingSaveSuccess = true
+        } catch {
+            errorMessage = error.localizedDescription
+            showingError = true
+        }
+        isSaving = false
     }
 }
 
@@ -88,16 +118,6 @@ struct ImageGridView: View {
                 ImageGridItem(image: image) {
                     // Delete action
                     storageManager.deleteImage(image)
-                } onSave: {
-                    // Save action
-                    Task {
-                        do {
-                            try await PhotoManager.saveToAlbum(url: image.url)
-                            // Show success alert
-                        } catch {
-                            // Show error alert
-                        }
-                    }
                 }
                 .onTapGesture {
                     selectedImage = image
@@ -108,7 +128,3 @@ struct ImageGridView: View {
         .padding()
     }
 }
-
-//#Preview {
-//    ImageGridItem()
-//}

@@ -17,10 +17,13 @@ struct ImageGeneratorView: View {
     @State private var showingDetail = false
     @State private var selectedAspectRatio: ImageAspectRatio = .square
     
-    // Photo picker states
     @State private var selectedItem: PhotosPickerItem? = nil
     @State private var selectedImageData: Data? = nil
     @State private var showingLoadingPhoto = false
+    
+    @State private var showingRestorationSuccess = false
+    @State private var showingRestorationError = false
+    @State private var restorationError = ""
     
     var body: some View {
         NavigationView {
@@ -86,15 +89,18 @@ struct ImageGeneratorView: View {
                         if selectedImageData != nil {
                             Button("Restore Face") {
                                 Task {
-                                    showingLoadingPhoto = true
                                     if let url = await viewModel.restoreImage(imageData: selectedImageData!) {
                                         let restoredImage = GeneratedImage(
                                             url: url,
                                             type: .restored
                                         )
                                         storageManager.saveImage(restoredImage)
+                                        showingRestorationSuccess = true
+                                        selectedImageData = nil
+                                    } else if let error = viewModel.error {
+                                        restorationError = error
+                                        showingRestorationError = true
                                     }
-                                    showingLoadingPhoto = false
                                 }
                             }
                             .foregroundColor(.white)
@@ -127,7 +133,6 @@ struct ImageGeneratorView: View {
                     )
                 }
             }
-//            .navigationTitle("AI Image Generator")
             .sheet(isPresented: $showingDetail) {
                 if let image = selectedImage {
                     ImageDetailView(image: image)
@@ -140,6 +145,16 @@ struct ImageGeneratorView: View {
                     }
                 }
             }
+        }
+        .alert("Restoration Complete!", isPresented: $showingRestorationSuccess) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text("Your restored image has been added to the gallery below")
+        }
+        .alert("Restoration Failed", isPresented: $showingRestorationError) {
+            Button("OK", role: .cancel) { }
+        } message: {
+            Text(restorationError)
         }
     }
 }

@@ -55,6 +55,9 @@
     "Image Quality" : {
 
     },
+    "Image saved successfully to Photos" : {
+
+    },
     "Info" : {
 
     },
@@ -484,19 +487,25 @@
     "OK" : {
 
     },
+    "Open Settings" : {
+
+    },
     "Portrait" : {
 
     },
     "Preferences" : {
 
     },
+    "Restoration Complete!" : {
+
+    },
+    "Restoration Failed" : {
+
+    },
     "Restore Face" : {
 
     },
     "Save to Photos" : {
-
-    },
-    "Saved!" : {
 
     },
     "Select Photo" : {
@@ -508,10 +517,16 @@
     "Square" : {
 
     },
+    "Success" : {
+
+    },
     "System" : {
 
     },
     "Theme" : {
+
+    },
+    "Your restored image has been added to the gallery below" : {
 
     }
   },

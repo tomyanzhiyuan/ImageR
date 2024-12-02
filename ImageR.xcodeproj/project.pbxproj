@@ -27,6 +27,7 @@
 		01181B932CFD0D1500595705 /* ImageStorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B922CFD0D1500595705 /* ImageStorageManager.swift */; };
 		01181B972CFD5F2000595705 /* PhotoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B962CFD5F2000595705 /* PhotoManager.swift */; };
 		01181B992CFD60C100595705 /* ImageGridItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01181B982CFD60C100595705 /* ImageGridItem.swift */; };
+		01181B9B2CFE2B1600595705 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 01181B9A2CFE2B1600595705 /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		01181B922CFD0D1500595705 /* ImageStorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageStorageManager.swift; sourceTree = "<group>"; };
 		01181B962CFD5F2000595705 /* PhotoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoManager.swift; sourceTree = "<group>"; };
 		01181B982CFD60C100595705 /* ImageGridItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageGridItem.swift; sourceTree = "<group>"; };
+		01181B9A2CFE2B1600595705 /* LaunchScreen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = LaunchScreen.storyboard; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -92,6 +94,7 @@
 				01181B652CFCDD5300595705 /* Preview Content */,
 				01181B862CFCEA7200595705 /* Bundle+Info.swift */,
 				01181B892CFCED7A00595705 /* Localizable.xcstrings */,
+				01181B9A2CFE2B1600595705 /* LaunchScreen.storyboard */,
 			);
 			path = ImageR;
 			sourceTree = "<group>";
@@ -122,6 +125,7 @@
 			children = (
 				01181B802CFCE90700595705 /* Replicate.swift */,
 				01181B732CFCE7D200595705 /* NotificationManager.swift */,
+				01181B962CFD5F2000595705 /* PhotoManager.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -141,7 +145,6 @@
 			children = (
 				01181B5F2CFCDD5100595705 /* ImageRApp.swift */,
 				01181B6D2CFCE75700595705 /* AppDelegate.swift */,
-				01181B962CFD5F2000595705 /* PhotoManager.swift */,
 			);
 			path = App;
 			sourceTree = "<group>";
@@ -213,6 +216,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				01181B672CFCDD5300595705 /* Preview Assets.xcassets in Resources */,
+				01181B9B2CFE2B1600595705 /* LaunchScreen.storyboard in Resources */,
 				01181B642CFCDD5300595705 /* Assets.xcassets in Resources */,
 				01181B8A2CFCED7A00595705 /* Localizable.xcstrings in Resources */,
 			);
@@ -306,6 +310,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -363,6 +369,8 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.5;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -378,17 +386,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ImageR/Preview Content\"";
+				DEVELOPMENT_TEAM = 56X5DG2B7U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ImageR/Info.plist;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Allow ImageR to save generated images to your photo library";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow ImageR to access your photo library for face restoration";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -398,6 +407,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zyan17.ImageR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -409,17 +419,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"ImageR/Preview Content\"";
+				DEVELOPMENT_TEAM = 56X5DG2B7U;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = ImageR/Info.plist;
 				INFOPLIST_KEY_NSPhotoLibraryAddUsageDescription = "Allow ImageR to save generated images to your photo library";
 				INFOPLIST_KEY_NSPhotoLibraryUsageDescription = "Allow ImageR to access your photo library for face restoration";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
-				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
-				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -429,6 +440,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zyan17.ImageR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

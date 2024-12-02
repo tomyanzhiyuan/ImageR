@@ -8,7 +8,7 @@
 import Foundation
 
 enum Config {
-    static let replicateAPIKey = "YOUR_API_KEY_HERE"
+    static let replicateAPIKey = "r8_KLMcq2x2iwXa26pvRPey7QyspwuCpje1KNftO"
     
     // Model versions
     static let disposableCameraModel = "levelsio/disposable-camera:4c8511f55da3561433a89774d0a5c5281594772ecc83130a52c07c6f72a4e550"
