@@ -9,37 +9,65 @@ import Foundation
 import SwiftUI
 
 class SettingsManager: ObservableObject {
-    // Core settings that actually affect the app
-    @AppStorage("imageQuality") var imageQuality: Int = 1 {
-        didSet {
-            updateReplicateSettings()
+    // MARK: - Stored Properties with AppStorage
+    
+    // API Configuration
+    @AppStorage("apiKey") var apiKey: String = Config.replicateAPIKey
+    
+    // Model & Processing Settings
+    @AppStorage("defaultModel") var defaultModel: Int = 0 // 0: Disposable, 1: Face Restoration
+    @AppStorage("imageQuality") var imageQuality: Int = 1 // 0: Low, 1: Medium, 2: High
+    
+    // App Preferences
+    @AppStorage("theme") var theme: Int = 0 // 0: System, 1: Light, 2: Dark
+    @AppStorage("autosaveEnabled") var autosaveEnabled: Bool = true
+    @AppStorage("maxStorageImages") var maxStorageImages: Int = 50
+    @AppStorage("notificationsEnabled") var notificationsEnabled: Bool = true
+    
+    // MARK: - Computed Properties
+    
+    var colorScheme: ColorScheme? {
+        switch theme {
+        case 1: return .light
+        case 2: return .dark
+        default: return nil
         }
     }
     
-    @AppStorage("theme") var theme: Int = 0 {
-        didSet {
-            applyTheme()
+    // MARK: - Public Methods
+    
+    func getQualitySettings() -> [String: Any] {
+        switch imageQuality {
+        case 0: // Low
+            return [
+                "num_inference_steps": 20,
+                "guidance_scale": 7.0
+            ]
+        case 2: // High
+            return [
+                "num_inference_steps": 50,
+                "guidance_scale": 8.0
+            ]
+        default: // Medium
+            return [
+                "num_inference_steps": 30,
+                "guidance_scale": 7.5
+            ]
         }
     }
     
-    @AppStorage("autoSave") var autoSave: Bool = true
-    
-    @AppStorage("maxImages") var maxImages: Int = 50 {
-        didSet {
-            cleanupStorageIfNeeded()
+    func getCurrentModelId() -> String {
+        switch defaultModel {
+        case 0:
+            return Config.disposableCameraModel
+        case 1:
+            return Config.faceRestorationModel
+        default:
+            return Config.disposableCameraModel
         }
     }
     
-    private func updateReplicateSettings() {
-        // Map quality settings to actual API parameters
-        let qualitySettings: [String: Any] = [
-            "num_inference_steps": imageQuality == 0 ? 20 : (imageQuality == 1 ? 30 : 50),
-            "guidance_scale": imageQuality == 0 ? 7.0 : (imageQuality == 1 ? 7.5 : 8.0),
-        ]
-        UserDefaults.standard.set(qualitySettings, forKey: "replicateSettings")
-    }
-    
-    private func applyTheme() {
+    func applyTheme() {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
               let window = windowScene.windows.first else { return }
         
@@ -53,13 +81,28 @@ class SettingsManager: ObservableObject {
         }
     }
     
-    private func cleanupStorageIfNeeded() {
-        let storage = ImageStorageManager.shared
-        if storage.savedImages.count > maxImages {
+    // MARK: - Storage Management
+    
+    func cleanupStorageIfNeeded() {
+        let storage = ImageStorageManager()
+        if storage.savedImages.count > maxStorageImages {
             // Remove oldest images to meet the limit
-            let numberToRemove = storage.savedImages.count - maxImages
+            let numberToRemove = storage.savedImages.count - maxStorageImages
             let oldestImages = storage.savedImages.prefix(numberToRemove)
             oldestImages.forEach { storage.deleteImage($0) }
         }
+    }
+}
+
+// MARK: - Settings Key Constants
+extension SettingsManager {
+    struct SettingsKeys {
+        static let apiKey = "apiKey"
+        static let defaultModel = "defaultModel"
+        static let imageQuality = "imageQuality"
+        static let theme = "theme"
+        static let autosave = "autosaveEnabled"
+        static let maxStorage = "maxStorageImages"
+        static let notifications = "notificationsEnabled"
     }
 }

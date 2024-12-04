@@ -40,10 +40,16 @@
     "Face Restoration" : {
 
     },
+    "Failed to load image" : {
+
+    },
     "Generate" : {
 
     },
     "Generate Image" : {
+
+    },
+    "Generated Image" : {
 
     },
     "High" : {
@@ -487,9 +493,6 @@
     "OK" : {
 
     },
-    "Open Settings" : {
-
-    },
     "Portrait" : {
 
     },
@@ -503,6 +506,9 @@
 
     },
     "Restore Face" : {
+
+    },
+    "Restored Image" : {
 
     },
     "Save to Photos" : {

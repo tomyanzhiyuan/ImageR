@@ -10,7 +10,7 @@ import PhotosUI
 
 struct ImageGeneratorView: View {
     @ObservedObject var viewModel: ImageGeneratorViewModel
-    var storageManager = ImageStorageManager()
+    @StateObject private var storageManager = ImageStorageManager()
     @State private var prompt: String = ""
     @State private var selectedTab = 0
     @State private var selectedImage: GeneratedImage? = nil
@@ -20,7 +20,6 @@ struct ImageGeneratorView: View {
     @State private var selectedItem: PhotosPickerItem? = nil
     @State private var selectedImageData: Data? = nil
     @State private var showingLoadingPhoto = false
-    
     @State private var showingRestorationSuccess = false
     @State private var showingRestorationError = false
     @State private var restorationError = ""
@@ -28,95 +27,12 @@ struct ImageGeneratorView: View {
     var body: some View {
         NavigationView {
             VStack {
-                Picker("Mode", selection: $selectedTab) {
-                    Text("Generate Image").tag(0)
-                    Text("Restore Face").tag(1)
-                }
-                .pickerStyle(SegmentedPickerStyle())
-                .padding()
+                modePicker
                 
                 if selectedTab == 0 {
-                    Picker("Aspect Ratio", selection: $selectedAspectRatio) {
-                        Text("Square").tag(ImageAspectRatio.square)
-                        Text("Landscape").tag(ImageAspectRatio.landscape)
-                        Text("Portrait").tag(ImageAspectRatio.portrait)
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .padding(.horizontal)
-                    
-                    TextField("Enter prompt for image generation", text: $prompt)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding()
-                    
-                    Button("Generate") {
-                        Task {
-                            if let url = await viewModel.generateImage(prompt: prompt, aspectRatio: selectedAspectRatio) {
-                                let size = ImageSize(width: 1024, height: aspectRatio == .square ? 1024 :
-                                                    (aspectRatio == .landscape ? 576 : 1792))
-                                let generatedImage = GeneratedImage(
-                                    url: url,
-                                    prompt: prompt,
-                                    type: .generated,
-                                    size: size
-                                )
-                                storageManager.saveImage(generatedImage)
-                            }
-                        }
-                    }
-                    .disabled(prompt.isEmpty || viewModel.isLoading)
+                    imageGenerationContent
                 } else {
-                    VStack(spacing: 20) {
-                        if let selectedImageData,
-                           let uiImage = UIImage(data: selectedImageData) {
-                            Image(uiImage: uiImage)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(height: 200)
-                                .cornerRadius(8)
-                        }
-                        
-                        PhotosPicker(
-                            selection: $selectedItem,
-                            matching: .images,
-                            photoLibrary: .shared()) {
-                                Label("Select Photo", systemImage: "photo.fill")
-                                    .font(.headline)
-                                    .foregroundColor(.white)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(Color.blue)
-                                    .cornerRadius(10)
-                                    .padding(.horizontal)
-                            }
-                        
-                        if selectedImageData != nil {
-                            Button("Restore Face") {
-                                Task {
-                                    if let url = await viewModel.restoreImage(imageData: selectedImageData!) {
-                                        let size = ImageSize(width: 1024, height: 1024) // Or get actual size from the image data
-                                        let restoredImage = GeneratedImage(
-                                            url: url,
-                                            type: .restored,
-                                            size: size
-                                        )
-                                        storageManager.saveImage(restoredImage)
-                                        showingRestorationSuccess = true
-                                        selectedImageData = nil
-                                    } else if let error = viewModel.error {
-                                        restorationError = error
-                                        showingRestorationError = true
-                                    }
-                                }
-                            }
-                            .foregroundColor(.white)
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.green)
-                            .cornerRadius(10)
-                            .padding(.horizontal)
-                            .disabled(viewModel.isLoading)
-                        }
-                    }
+                    faceRestorationContent
                 }
                 
                 if viewModel.isLoading || showingLoadingPhoto {
@@ -130,36 +46,159 @@ struct ImageGeneratorView: View {
                         .padding()
                 }
                 
-                ScrollView {
-                    ImageGridView(
-                        storageManager: storageManager,
-                        selectedImage: $selectedImage,
-                        showingDetail: $showingDetail
-                    )
-                }
+                imageGrid
             }
             .sheet(isPresented: $showingDetail) {
-                if let image = selectedImage {
-                    ImageDetailView(image: image)
-                }
+                imageDetailSheet
             }
             .onChange(of: selectedItem) { _, newItem in
-                Task {
-                    if let data = try? await newItem?.loadTransferable(type: Data.self) {
-                        selectedImageData = data
-                    }
+                handleSelectedItemChange(newItem)
+            }
+            .alert("Restoration Complete!", isPresented: $showingRestorationSuccess) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text("Your restored image has been added to the gallery below")
+            }
+            .alert("Restoration Failed", isPresented: $showingRestorationError) {
+                Button("OK", role: .cancel) { }
+            } message: {
+                Text(restorationError)
+            }
+        }
+    }
+    
+    // MARK: - View Components
+    
+    private var modePicker: some View {
+        Picker("Mode", selection: $selectedTab) {
+            Text("Generate Image").tag(0)
+            Text("Restore Face").tag(1)
+        }
+        .pickerStyle(SegmentedPickerStyle())
+        .padding()
+    }
+    
+    private var imageGenerationContent: some View {
+        VStack {
+            Picker("Aspect Ratio", selection: $selectedAspectRatio) {
+                Text("Square").tag(ImageAspectRatio.square)
+                Text("Landscape").tag(ImageAspectRatio.landscape)
+                Text("Portrait").tag(ImageAspectRatio.portrait)
+            }
+            .pickerStyle(SegmentedPickerStyle())
+            .padding(.horizontal)
+            
+            TextField("Enter prompt for image generation", text: $prompt)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+            
+            generateButton
+        }
+    }
+    
+    private var generateButton: some View {
+        Button("Generate") {
+            Task {
+                if let url = await viewModel.generateImage(prompt: prompt, aspectRatio: selectedAspectRatio) {
+                    let generatedImage = GeneratedImage(
+                        url: url,
+                        prompt: prompt,
+                        type: .generated
+                    )
+                    storageManager.saveImage(generatedImage)
                 }
             }
         }
-        .alert("Restoration Complete!", isPresented: $showingRestorationSuccess) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text("Your restored image has been added to the gallery below")
+        .disabled(prompt.isEmpty || viewModel.isLoading)
+    }
+    
+    private var faceRestorationContent: some View {
+        VStack(spacing: 20) {
+            if let selectedImageData,
+               let uiImage = UIImage(data: selectedImageData) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 200)
+                    .cornerRadius(8)
+            }
+            
+            photoPickerButton
+            
+            if selectedImageData != nil {
+                restoreButton
+            }
         }
-        .alert("Restoration Failed", isPresented: $showingRestorationError) {
-            Button("OK", role: .cancel) { }
-        } message: {
-            Text(restorationError)
+    }
+    
+    private var photoPickerButton: some View {
+        PhotosPicker(
+            selection: $selectedItem,
+            matching: .images,
+            photoLibrary: .shared()
+        ) {
+            Label("Select Photo", systemImage: "photo.fill")
+                .font(.headline)
+                .foregroundColor(.white)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(Color.blue)
+                .cornerRadius(10)
+                .padding(.horizontal)
+        }
+    }
+    
+    private var restoreButton: some View {
+        Button("Restore Face") {
+            Task {
+                if let url = await viewModel.restoreImage(imageData: selectedImageData!) {
+                    let restoredImage = GeneratedImage(
+                        url: url,
+                        type: .restored
+                    )
+                    storageManager.saveImage(restoredImage)
+                    showingRestorationSuccess = true
+                    selectedImageData = nil
+                } else if let error = viewModel.error {
+                    restorationError = error
+                    showingRestorationError = true
+                }
+            }
+        }
+        .foregroundColor(.white)
+        .frame(maxWidth: .infinity)
+        .padding()
+        .background(Color.green)
+        .cornerRadius(10)
+        .padding(.horizontal)
+        .disabled(viewModel.isLoading)
+    }
+    
+    private var imageGrid: some View {
+        ScrollView {
+            ImageGridView(
+                storageManager: storageManager,
+                selectedImage: $selectedImage,
+                showingDetail: $showingDetail
+            )
+        }
+    }
+    
+    private var imageDetailSheet: some View {
+        Group {
+            if let image = selectedImage {
+                ImageDetailView(image: image)
+            }
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func handleSelectedItemChange(_ newItem: PhotosPickerItem?) {
+        Task {
+            if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                selectedImageData = data
+            }
         }
     }
 }

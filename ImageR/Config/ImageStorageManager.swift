@@ -7,25 +7,30 @@
 
 import Foundation
 
-struct ImageSize: Codable {
-    let width: Int
-    let height: Int
+public struct ImageSize: Codable {
+    public let width: Int
+    public let height: Int
+    
+    public init(width: Int, height: Int) {
+        self.width = width
+        self.height = height
+    }
 }
 
-struct GeneratedImage: Identifiable, Codable {
-    let id: UUID
-    let url: URL
-    let prompt: String?
-    let createdAt: Date
-    let type: ImageType
-    let size: ImageSize?
+public struct GeneratedImage: Identifiable, Codable {
+    public let id: UUID
+    public let url: URL
+    public let prompt: String?
+    public let createdAt: Date
+    public let type: ImageType
+    public let size: ImageSize?
     
-    enum ImageType: String, Codable {
+    public enum ImageType: String, Codable {
         case generated
         case restored
     }
     
-    init(url: URL, prompt: String? = nil, type: ImageType, size: ImageSize? = nil) {
+    public init(url: URL, prompt: String? = nil, type: ImageType, size: ImageSize? = nil) {
         self.id = UUID()
         self.url = url
         self.prompt = prompt
@@ -35,13 +40,12 @@ struct GeneratedImage: Identifiable, Codable {
     }
 }
 
-
-class ImageStorageManager: ObservableObject {
-    @Published var savedImages: [GeneratedImage] = []
+public class ImageStorageManager: ObservableObject {
+    @Published public var savedImages: [GeneratedImage] = []
     private let userDefaults = UserDefaults.standard
     private let saveKey = "savedImages"
     
-    init() {
+    public init() {
         loadImages()
     }
     

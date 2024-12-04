@@ -17,60 +17,36 @@ struct ImageGridItem: View {
     @State private var errorMessage = ""
     @State private var showingSaveSuccess = false
     @State private var isSaving = false
+    @State private var imageLoadError = false
     
     var body: some View {
-        AsyncImage(url: image.url) { phase in
-            switch phase {
-            case .success(let loadedImage):
-                loadedImage
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 150, height: 150)
-                    .clipped()
-                    .cornerRadius(8)
-                    .overlay(alignment: .topTrailing) {
-                        Button {
-                            showingOptions = true
-                        } label: {
-                            if isSaving {
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
-                                    .padding(8)
-                                    .background(Color.black.opacity(0.6))
-                                    .clipShape(Circle())
-                            } else {
-                                Image(systemName: "ellipsis")
-                                    .foregroundColor(.white)
-                                    .padding(8)
-                                    .background(Color.black.opacity(0.6))
-                                    .clipShape(Circle())
-                            }
+        Group {
+            AsyncImage(url: image.url) { phase in
+                switch phase {
+                case .empty:
+                    ProgressView()
+                        .frame(width: 150, height: 150)
+                case .success(let image):
+                    image
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 150, height: 150)
+                        .clipped()
+                        .cornerRadius(8)
+                        .overlay(alignment: .topTrailing) {
+                            optionsButton
                         }
-                        .padding(4)
-                        .disabled(isSaving)
-                    }
-            case .failure(let error):
-                VStack {
-                    Image(systemName: "xmark.circle")
-                        .font(.system(size: 40))
-                        .foregroundColor(.red)
-                    Text(error.localizedDescription)
-                        .font(.caption)
-                        .foregroundColor(.red)
+                case .failure:
+                    errorView
+                @unknown default:
+                    errorView
                 }
-                .frame(width: 150, height: 150)
-            case .empty:
-                ProgressView()
-                    .frame(width: 150, height: 150)
-            @unknown default:
-                EmptyView()
             }
         }
+        .frame(width: 150, height: 150)
         .confirmationDialog("Image Options", isPresented: $showingOptions) {
             Button("Save to Photos") {
-                Task {
-                    await saveImage()
-                }
+                saveImage()
             }
             Button("Delete", role: .destructive) {
                 onDelete()
@@ -79,11 +55,6 @@ struct ImageGridItem: View {
         }
         .alert("Error", isPresented: $showingError) {
             Button("OK", role: .cancel) { }
-            Button("Open Settings") {
-                if let settingsURL = URL(string: UIApplication.openSettingsURLString) {
-                    UIApplication.shared.open(settingsURL)
-                }
-            }
         } message: {
             Text(errorMessage)
         }
@@ -94,16 +65,54 @@ struct ImageGridItem: View {
         }
     }
     
-    private func saveImage() async {
-        isSaving = true
-        do {
-            try await PhotoManager.saveToAlbum(url: image.url)
-            showingSaveSuccess = true
-        } catch {
-            errorMessage = error.localizedDescription
-            showingError = true
+    private var optionsButton: some View {
+        Button {
+            showingOptions = true
+        } label: {
+            if isSaving {
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .padding(8)
+                    .background(Color.black.opacity(0.6))
+                    .clipShape(Circle())
+            } else {
+                Image(systemName: "ellipsis")
+                    .foregroundColor(.white)
+                    .padding(8)
+                    .background(Color.black.opacity(0.6))
+                    .clipShape(Circle())
+            }
         }
-        isSaving = false
+        .padding(4)
+        .disabled(isSaving)
+    }
+    
+    private var errorView: some View {
+        VStack {
+            Image(systemName: "exclamationmark.triangle")
+                .font(.system(size: 30))
+                .foregroundColor(.red)
+            Text("Failed to load image")
+                .font(.caption)
+                .foregroundColor(.red)
+        }
+        .frame(width: 150, height: 150)
+        .background(Color.gray.opacity(0.1))
+        .cornerRadius(8)
+    }
+    
+    private func saveImage() {
+        Task {
+            isSaving = true
+            do {
+                try await PhotoManager.saveToAlbum(url: image.url)
+                showingSaveSuccess = true
+            } catch {
+                errorMessage = error.localizedDescription
+                showingError = true
+            }
+            isSaving = false
+        }
     }
 }
 
@@ -116,7 +125,6 @@ struct ImageGridView: View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
             ForEach(storageManager.savedImages.reversed()) { image in
                 ImageGridItem(image: image) {
-                    // Delete action
                     storageManager.deleteImage(image)
                 }
                 .onTapGesture {
