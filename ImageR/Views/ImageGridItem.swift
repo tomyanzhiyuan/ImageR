@@ -8,6 +8,34 @@
 import SwiftUI
 import PhotosUI
 
+struct ImageGridView: View {
+    @ObservedObject var storageManager: ImageStorageManager
+    @Binding var selectedImage: GeneratedImage?
+    @Binding var showingDetail: Bool
+    
+    var body: some View {
+        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
+            if storageManager.savedImages.isEmpty {
+                Text("No images yet")
+                    .foregroundColor(.gray)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    .padding()
+            } else {
+                ForEach(storageManager.savedImages.reversed()) { image in
+                    ImageGridItem(image: image) {
+                        storageManager.deleteImage(image)
+                    }
+                    .onTapGesture {
+                        selectedImage = image
+                        showingDetail = true
+                    }
+                }
+            }
+        }
+        .padding()
+    }
+}
+
 struct ImageGridItem: View {
     let image: GeneratedImage
     let onDelete: () -> Void
@@ -17,7 +45,6 @@ struct ImageGridItem: View {
     @State private var errorMessage = ""
     @State private var showingSaveSuccess = false
     @State private var isSaving = false
-    @State private var imageLoadError = false
     
     var body: some View {
         Group {
@@ -37,9 +64,19 @@ struct ImageGridItem: View {
                             optionsButton
                         }
                 case .failure:
-                    errorView
+                    VStack {
+                        Image(systemName: "exclamationmark.triangle")
+                            .font(.system(size: 30))
+                            .foregroundColor(.red)
+                        Text("Failed to load")
+                            .font(.caption)
+                            .foregroundColor(.red)
+                    }
+                    .frame(width: 150, height: 150)
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(8)
                 @unknown default:
-                    errorView
+                    EmptyView()
                 }
             }
         }
@@ -87,20 +124,6 @@ struct ImageGridItem: View {
         .disabled(isSaving)
     }
     
-    private var errorView: some View {
-        VStack {
-            Image(systemName: "exclamationmark.triangle")
-                .font(.system(size: 30))
-                .foregroundColor(.red)
-            Text("Failed to load image")
-                .font(.caption)
-                .foregroundColor(.red)
-        }
-        .frame(width: 150, height: 150)
-        .background(Color.gray.opacity(0.1))
-        .cornerRadius(8)
-    }
-    
     private func saveImage() {
         Task {
             isSaving = true
@@ -113,26 +136,5 @@ struct ImageGridItem: View {
             }
             isSaving = false
         }
-    }
-}
-
-struct ImageGridView: View {
-    @ObservedObject var storageManager: ImageStorageManager
-    @Binding var selectedImage: GeneratedImage?
-    @Binding var showingDetail: Bool
-    
-    var body: some View {
-        LazyVGrid(columns: [GridItem(.adaptive(minimum: 150))], spacing: 20) {
-            ForEach(storageManager.savedImages.reversed()) { image in
-                ImageGridItem(image: image) {
-                    storageManager.deleteImage(image)
-                }
-                .onTapGesture {
-                    selectedImage = image
-                    showingDetail = true
-                }
-            }
-        }
-        .padding()
     }
 }

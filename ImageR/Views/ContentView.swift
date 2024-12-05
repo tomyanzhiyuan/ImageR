@@ -13,10 +13,15 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            ImageGeneratorView(viewModel: ImageGeneratorViewModel(apiToken: apiToken))
-                .tabItem {
-                    Label("Generate", systemImage: "wand.and.stars")
-                }
+            ImageGeneratorView(
+                viewModel: ImageGeneratorViewModel(
+                    apiToken: apiToken,
+                    settingsManager: settingsManager
+                )
+            )
+            .tabItem {
+                Label("Generate", systemImage: "wand.and.stars")
+            }
             
             SettingsView()
                 .tabItem {

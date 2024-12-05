@@ -1,31 +1,37 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "API Configuration" : {
-
-    },
-    "API Key" : {
-
-    },
     "App Info" : {
+
+    },
+    "Appearance" : {
 
     },
     "Aspect Ratio" : {
 
     },
+    "Auto-save to Photos" : {
+
+    },
+    "Automatically save generated images to your photo library" : {
+
+    },
     "Cancel" : {
+
+    },
+    "Clear All Generated Images" : {
 
     },
     "Dark" : {
 
     },
-    "Default Model" : {
-
-    },
     "Delete" : {
 
     },
-    "Disposable Camera" : {
+    "Delete All" : {
+
+    },
+    "Delete All Images?" : {
 
     },
     "Done" : {
@@ -37,10 +43,7 @@
     "Error" : {
 
     },
-    "Face Restoration" : {
-
-    },
-    "Failed to load image" : {
+    "Failed to load" : {
 
     },
     "Generate" : {
@@ -49,19 +52,22 @@
     "Generate Image" : {
 
     },
+    "Generate multiple images at once (may take longer)" : {
+
+    },
     "Generated Image" : {
 
     },
-    "High" : {
+    "Generation Settings" : {
 
     },
     "Image Options" : {
 
     },
-    "Image Quality" : {
+    "Image saved successfully to Photos" : {
 
     },
-    "Image saved successfully to Photos" : {
+    "Images per Generation: %lld" : {
 
     },
     "Info" : {
@@ -481,22 +487,16 @@
     "Light" : {
 
     },
-    "Low" : {
-
-    },
-    "Medium" : {
-
-    },
     "Mode" : {
+
+    },
+    "No images yet" : {
 
     },
     "OK" : {
 
     },
     "Portrait" : {
-
-    },
-    "Preferences" : {
 
     },
     "Restoration Complete!" : {
@@ -523,6 +523,9 @@
     "Square" : {
 
     },
+    "Storage Management" : {
+
+    },
     "Success" : {
 
     },
@@ -530,6 +533,12 @@
 
     },
     "Theme" : {
+
+    },
+    "This action cannot be undone" : {
+
+    },
+    "This will remove all generated images from the app. This action cannot be undone." : {
 
     },
     "Your restored image has been added to the gallery below" : {

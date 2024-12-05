@@ -8,6 +8,23 @@
 import Foundation
 import Replicate
 
+struct ImageGenerationResult {
+    let url: URL
+    let metadata: ImageMetadata
+}
+
+public struct ImageMetadata: Codable, Equatable {
+    public let inferenceSteps: Int
+    public let guidanceScale: Double
+    public let aspectRatio: String
+    
+    public init(inferenceSteps: Int, guidanceScale: Double, aspectRatio: String) {
+        self.inferenceSteps = inferenceSteps
+        self.guidanceScale = guidanceScale
+        self.aspectRatio = aspectRatio
+    }
+}
+
 enum ImageAspectRatio: String {
     case landscape = "16:9"
     case portrait = "9:16"
@@ -19,16 +36,21 @@ class ReplicateService {
     private let faceRestorationModelVersion = "9283608cc6b7be6b65a8e44983db012355fde4132009bf99d976b2f0896856a3"
     
     init(apiToken: String) {
+        print("Initializing ReplicateService with token: \(apiToken.prefix(5))...")
         self.client = Replicate.Client(token: apiToken)
     }
     
-    func runImageGeneration(prompt: String, aspectRatio: ImageAspectRatio = .square) async throws -> URL? {
+    func runImageGeneration(prompt: String, aspectRatio: ImageAspectRatio = .square) async throws -> ImageGenerationResult? {
+        print("Starting image generation with prompt: \(prompt)")
         let model = try await client.getModel("stability-ai/stable-diffusion-3")
+        print("Model retrieved successfully")
         
         if let latestVersion = model.latestVersion {
-            // Get quality settings from UserDefaults
-                        let defaults = UserDefaults.standard
+            print("Using model version: \(latestVersion.id)")
+            
+            let defaults = UserDefaults.standard
             let qualitySettings = defaults.dictionary(forKey: "replicateSettings") ?? [:]
+            print("Quality settings: \(qualitySettings)")
             
             var input: [String: Replicate.Value] = [
                 "prompt": .string(prompt),
@@ -43,29 +65,65 @@ class ReplicateService {
                 input["guidance_scale"] = .double(guidance)
             }
             
+            print("Final input parameters: \(input)")
+            
             let prediction = try await client.createPrediction(
                 version: latestVersion.id,
                 input: input
             )
+            print("Prediction created with ID: \(prediction.id)")
             
-            // Poll for completion
             var currentPrediction = prediction
             repeat {
-                try await Task.sleep(nanoseconds: 1_000_000_000) // Wait 1 second
+                try await Task.sleep(nanoseconds: 1_000_000_000)
                 currentPrediction = try await client.getPrediction(id: prediction.id)
+                print("Prediction status: \(currentPrediction.status.rawValue)")
+                
+                if let error = currentPrediction.error {
+                    print("Prediction error received: \(error)")
+                    throw NSError(domain: "ReplicateService", code: -1,
+                                  userInfo: [NSLocalizedDescriptionKey: error])
+                }
+                
             } while currentPrediction.status.rawValue == "starting" ||
             currentPrediction.status.rawValue == "processing"
             
-            if let output = currentPrediction.output,
-               case let .array(values) = output,
-               let firstOutput = values.first,
-               case let .string(urlString) = firstOutput,
-               let outputURL = URL(string: urlString) {
-                return outputURL
+            print("Processing complete")
+            
+            if let output = currentPrediction.output {
+                print("Raw output received: \(output)")
+                if case let .array(values) = output,
+                   let firstOutput = values.first,
+                   case let .string(urlString) = firstOutput {
+                    print("Generated URL: \(urlString)")
+                    guard let outputURL = URL(string: urlString) else { return nil }
+                    
+                    let metadata = ImageMetadata(
+                        inferenceSteps: {
+                            if case let .int(steps) = input["num_inference_steps"] {
+                                return steps
+                            }
+                            return 30
+                        }(),
+                        guidanceScale: {
+                            if case let .double(scale) = input["guidance_scale"] {
+                                return scale
+                            }
+                            return 7.5
+                        }(),
+                        aspectRatio: aspectRatio.rawValue
+                    )
+                    return ImageGenerationResult(url: outputURL, metadata: metadata)
+                }
             }
+            
+            print("No valid output found in prediction response")
+        } else {
+            print("No latest version found for model")
         }
         return nil
     }
+
     
     func runFaceRestoration(imageData: Data) async throws -> URL? {
         print("Starting face restoration process...")

@@ -79,11 +79,14 @@ struct ImageDetailView: View {
                         
                         DetailRow(title: "Type", value: image.type == .generated ? "AI Generated" : "Face Restored")
                         DetailRow(title: "Created", value: formatDate(image.createdAt))
-                        DetailRow(title: "Size", value: "\(image.size?.width ?? 0) x \(image.size?.height ?? 0)")
+                        DetailRow(title: "Size", value: "\(image.size.width) x \(image.size.height)")
                         
                         if image.type == .generated {
                             DetailRow(title: "Model", value: "Stable Diffusion v3")
                         }
+                        DetailRow(title: "Generation Steps", value: "\(image.inferenceSteps ?? 30)")
+                        DetailRow(title: "Guidance Scale", value: String(format: "%.1f", image.guidanceScale ?? 7.5))
+                        DetailRow(title: "Aspect Ratio", value: image.aspectRatio ?? "1:1")
                     }
                     .padding()
                     .background(Color(.systemBackground))

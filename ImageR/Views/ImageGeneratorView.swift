@@ -11,6 +11,8 @@ import PhotosUI
 struct ImageGeneratorView: View {
     @ObservedObject var viewModel: ImageGeneratorViewModel
     @StateObject private var storageManager = ImageStorageManager()
+    @EnvironmentObject private var settingsManager: SettingsManager
+
     @State private var prompt: String = ""
     @State private var selectedTab = 0
     @State private var selectedImage: GeneratedImage? = nil
@@ -99,13 +101,20 @@ struct ImageGeneratorView: View {
     private var generateButton: some View {
         Button("Generate") {
             Task {
-                if let url = await viewModel.generateImage(prompt: prompt, aspectRatio: selectedAspectRatio) {
-                    let generatedImage = GeneratedImage(
-                        url: url,
-                        prompt: prompt,
-                        type: .generated
-                    )
-                    storageManager.saveImage(generatedImage)
+                if let results = await viewModel.generateImages(prompt: prompt, aspectRatio: selectedAspectRatio) {
+                    for (url, metadata) in results {
+                        let generatedImage = await GeneratedImage(
+                            url: url,
+                            prompt: prompt,
+                            type: .generated,
+                            metadata: metadata
+                        )
+                        storageManager.saveImage(generatedImage)
+                        
+                        if settingsManager.autoSaveToPhotos {
+                            try? await PhotoManager.saveToAlbum(url: url)
+                        }
+                    }
                 }
             }
         }
@@ -152,7 +161,7 @@ struct ImageGeneratorView: View {
         Button("Restore Face") {
             Task {
                 if let url = await viewModel.restoreImage(imageData: selectedImageData!) {
-                    let restoredImage = GeneratedImage(
+                    let restoredImage = await GeneratedImage(
                         url: url,
                         type: .restored
                     )
