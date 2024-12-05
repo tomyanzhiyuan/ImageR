@@ -58,7 +58,7 @@ public struct GeneratedImage: Identifiable, Codable {
     public var aspectRatio: String?   // The aspect ratio used (16:9, 1:1, etc.)
     public var restorationScale: Int? // The scale factor used in restoration
     public var restorationVersion: String? // The version of GFPGAN used
-    public let metadata: ImageMetadata
+    public let metadata: ImageMetadata?
 
     
     public enum ImageType: String, Codable {
@@ -72,7 +72,7 @@ public struct GeneratedImage: Identifiable, Codable {
         self.prompt = prompt
         self.createdAt = Date()
         self.type = type
-        self.metadata = metadata!
+        self.metadata = metadata
         
         // Get image size synchronously
         do {
@@ -93,6 +93,8 @@ public struct GeneratedImage: Identifiable, Codable {
 }
 
 public class ImageStorageManager: ObservableObject {
+    public static let shared = ImageStorageManager()
+    
     @Published public var savedImages: [GeneratedImage] = []
     private let userDefaults = UserDefaults.standard
     private let saveKey = "savedImages"

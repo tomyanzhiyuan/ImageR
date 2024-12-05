@@ -10,7 +10,7 @@ import PhotosUI
 
 struct ImageGeneratorView: View {
     @ObservedObject var viewModel: ImageGeneratorViewModel
-    @StateObject private var storageManager = ImageStorageManager()
+    @ObservedObject private var storageManager = ImageStorageManager.shared
     @EnvironmentObject private var settingsManager: SettingsManager
 
     @State private var prompt: String = ""
@@ -186,7 +186,7 @@ struct ImageGeneratorView: View {
     private var imageGrid: some View {
         ScrollView {
             ImageGridView(
-                storageManager: storageManager,
+                storageManager: ImageStorageManager.shared,
                 selectedImage: $selectedImage,
                 showingDetail: $showingDetail
             )

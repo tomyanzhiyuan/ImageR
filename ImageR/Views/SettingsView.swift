@@ -10,7 +10,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @EnvironmentObject var settingsManager: SettingsManager
-    @StateObject private var storageManager = ImageStorageManager()
+    @ObservedObject private var storageManager = ImageStorageManager.shared
     @State private var showingDeleteConfirmation = false
     
     var body: some View {
@@ -58,7 +58,8 @@ struct SettingsView: View {
                 titleVisibility: .visible
             ) {
                 Button("Delete All", role: .destructive) {
-                    settingsManager.clearAllStoredImages()
+                    ImageStorageManager.shared.savedImages.removeAll()
+                    ImageStorageManager.shared.saveToStorage()
                 }
                 Button("Cancel", role: .cancel) { }
             } message: {
