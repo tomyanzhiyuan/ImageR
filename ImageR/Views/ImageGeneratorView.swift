@@ -26,6 +26,44 @@ struct ImageGeneratorView: View {
     @State private var showingRestorationError = false
     @State private var restorationError = ""
     
+    private struct PulsingLoadingView: View {
+        @State private var isAnimating = false
+        
+        var body: some View {
+            ZStack {
+                // Background circle using Color
+                Circle()
+                    .stroke(Color("Color"), lineWidth: 2.5)
+                    .frame(width: 60, height: 60)
+                    .opacity(0.3)
+                
+                // Pulsing circle using Color 1
+                Circle()
+                    .stroke(Color("Color 1"), lineWidth: 2)
+                    .frame(width: 60, height: 60)
+                    .scaleEffect(isAnimating ? 1.3 : 1.0)
+                    .opacity(isAnimating ? 0.0 : 0.8)
+                
+                // Spinning circle using AccentColor
+                Circle()
+                    .trim(from: 0, to: 0.8)
+                    .stroke(Color.accentColor, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                    .frame(width: 40, height: 40)
+                    .rotationEffect(Angle(degrees: isAnimating ? 360 : 0))
+            }
+            .onAppear {
+                // Pulsing animation
+                withAnimation(
+                    Animation
+                        .easeInOut(duration: 1.2)
+                        .repeatForever(autoreverses: false)
+                ) {
+                    isAnimating = true
+                }
+            }
+        }
+    }
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -38,8 +76,13 @@ struct ImageGeneratorView: View {
                 }
                 
                 if viewModel.isLoading || showingLoadingPhoto {
-                    ProgressView()
-                        .padding()
+                    VStack {
+                        PulsingLoadingView()
+                        Text("Generating...")
+                            .foregroundColor(Color("Color"))
+                            .font(.subheadline)
+                    }
+                    .padding()
                 }
                 
                 if let error = viewModel.error {

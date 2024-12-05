@@ -11,6 +11,7 @@ import UIKit
 
 @main
 struct ImageRApp: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     @StateObject private var settingsManager = SettingsManager()
     let apiToken = "r8_KLMcq2x2iwXa26pvRPey7QyspwuCpje1KNftO"
     

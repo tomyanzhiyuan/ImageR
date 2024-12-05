@@ -45,6 +45,7 @@ struct ImageGridItem: View {
     @State private var errorMessage = ""
     @State private var showingSaveSuccess = false
     @State private var isSaving = false
+    @State private var isDeleting = false  // New state for deletion animation
     
     var body: some View {
         Group {
@@ -81,12 +82,21 @@ struct ImageGridItem: View {
             }
         }
         .frame(width: 150, height: 150)
+        .scaleEffect(isDeleting ? 0.1 : 1.0)  // Scale down when deleting
+        .opacity(isDeleting ? 0 : 1)          // Fade out when deleting
+        .animation(.easeInOut(duration: 0.3), value: isDeleting)  // Animate changes
         .confirmationDialog("Image Options", isPresented: $showingOptions) {
             Button("Save to Photos") {
                 saveImage()
             }
             Button("Delete", role: .destructive) {
-                onDelete()
+                withAnimation {
+                    isDeleting = true
+                }
+                // Delay the actual deletion to allow animation to complete
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                    onDelete()
+                }
             }
             Button("Cancel", role: .cancel) { }
         }

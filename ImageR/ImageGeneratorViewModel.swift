@@ -37,6 +37,15 @@ class ImageGeneratorViewModel: ObservableObject {
             }
             
             isLoading = false
+            
+            // Only send notification if app is in background
+            if UIApplication.shared.applicationState != .active {
+                NotificationManager.sendGenerationCompleteNotification(
+                    imagesCount: results.count,
+                    prompt: prompt
+                )
+            }
+            
             return results.isEmpty ? nil : results
             
         } catch {
